@@ -52,7 +52,9 @@ component:()=>import('../teacher/studentManage.vue')},
 {path:'/myExam',
 component:()=>import('../teacher/myExam.vue')},
 {path:'/myProblem',
-component:()=>import('../teacher/myProblem.vue')}
+component:()=>import('../teacher/myProblem.vue')},
+{path:'/createExam',
+component:()=>import('../teacher/createExam.vue')}
     ]
   }
 ]

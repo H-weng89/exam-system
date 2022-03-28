@@ -168,19 +168,36 @@ export default defineComponent({
     height: 100vh;
     background-color: #f2f2f2;
     background-size: cover;
+    .main::before{
+   content:'';
+    position:absolute;  /* 固定模糊层位置 */
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    
+    // background:url(../assets/bg.png) no-repeat center center fixed;/* 与上面的 bg 中的background设置一样 */
+    filter:blur(10px) contrast(.8);  /* 值越大越模糊 */
+    z-index:-1;  /* 模糊层在最下面 */
+}
+
     .main{
+      padding: 20px;
         display: flex;
+         border: 1px solid ;
+         border-radius: 20px;
         .left{
-            width: 50%;
+            width: 55%;
             height: 100%;
           background-image: url(../assets/bg.png);
             border-top-left-radius:20px;
+            background-size: 100% 100%;
 
 border-bottom-left-radius:20px;
         }
         .right{
             background-color: #f8f8f8;
-            width: 50%;
+            width: 45%;
                border-top-right-radius:20px;
 border-bottom-right-radius:20px;
             height: 100%;
@@ -257,8 +274,8 @@ border-bottom-right-radius:20px;
        
                     }
 
-        width: 50%;
-        height:55%;
+  width: 60%;
+        height:60%;
         position: absolute;
         left: 60%;
         top: 60%;

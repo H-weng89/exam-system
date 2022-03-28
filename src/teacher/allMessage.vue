@@ -1,10 +1,10 @@
 <template>
     <div class="wra">
         <div class="header">
-            <div class="myExam">消息同通知</div>
+            <!-- <div class="myExam">消息同通知</div> -->
            
-            <div :class="{'ing':1,'chosen':1}">全部</div>
-            <div :class="{'end':1,}">系统通知</div>
+            <div :class="{'ing':1,'chosen':1}">全部通知</div>
+            <!-- <div :class="{'end':1,}">系统通知</div> -->
         </div>
         <div class="second">
           
@@ -16,10 +16,11 @@
       @search="onSearch"
     />
             </div>
-            <div class="bt"><a-button type="primary" style="
+        <div class="bt"><a-button type="primary" style="
     border-radius: 4px;
     width: 100px;
-" @click="start(0)">发布通知</a-button></div>
+    background-color:#5784ff;
+" @click="start(1)">发布通知</a-button></div>
         </div>
         <div class="main">
         <a-table :columns="columns" :data-source="data" :pagination="{pageSize:8}"  rowKey="account">
@@ -171,20 +172,25 @@ const value = ref('');
     width: 98% !important;
     height: 95% !important;
   
-    background-color: white;
+    background-color: #eceff8;
     margin: auto;
     margin-top: 20px;
+    
+
     .header{
         width: 40%;
         height: 7%;
         display: flex;
        
-        justify-content: space-around;
+        justify-content: flex-start;
+        margin-left: 20px;
         align-items: center;
-        font-size: 16px;
-        color: gray;
+        font-size: 20px;
+        margin-bottom: 10px;
+        
         .chosen{
-          color: black;
+          color: #3a4167;
+          font-weight: 500;
         }
         .myExam{
             font-size: 20px;
@@ -195,26 +201,48 @@ const value = ref('');
     .second{
         align-items: center;
         margin-top: 10px;
-        width: 95%;
-        height: 7%;
+        width: 98%;
+        height: 65px;
         display: flex;
         justify-content: space-between;
-        margin-left: 25px;
+        margin: auto;
+        border-radius: 5px;
+        background-color: white;
+        margin-bottom: 10px;
         .bt{
           border-radius: 10px;
+          margin-right: 20px;
+        }
+
+        .search{
+          span{
+ color: #3a4167;
+          }
+         
+          margin-left: 20px;
         }
     }
     .main{
         width: 98%;
-        height: 84%;
+        height: 83%;
+        color: #3a4167 !important;
         margin:auto;
-       
+        /deep/.ant-table-tbody > tr > td:nth-child(6){
+         
+
+        }
+        /deep/.ant-table-thead > tr:first-child > th{
+          background-color:#f6f7fc ;
+        }
         .operate{
           display: flex;
           justify-content: space-around;
         }
+         /deep/.ant-table-tbody > tr > td:nth-child(6):hover{
+           cursor: pointer;
+         }
+       
       
-        
     }
 }
 

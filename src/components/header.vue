@@ -36,7 +36,7 @@ export default defineComponent({
 <style lang="less" scoped>
     .header{
         height: 8%;
-        width: 100%;
+        width: 100vw;
         background-color: white;
         display: flex;
         align-items: center;

@@ -37,7 +37,7 @@
       </a-sub-menu>
         <a-sub-menu key="sub2">
         <template #icon>
-          <MailOutlined />
+     <img src="../assets/exam.png" alt=""  style="width:20px">
         </template>
         <template #title>考试</template>
         <a-menu-item key="4"><span class="circle"></span>我的考试</a-menu-item>
@@ -47,16 +47,11 @@
       </a-sub-menu>
         <a-menu-item key="6">
         <template #icon>
-          <AppstoreOutlined/>
+        <img src="../assets/check.png" alt=""  style="width:20px">
         </template>
      批改试卷
       </a-menu-item>    
-       <a-menu-item key="7">
-        <template #icon>
-          <AppstoreOutlined/>
-        </template>
-     考试管理
-      </a-menu-item>     
+     
       <a-menu-item key="8">
         <template #icon>
           <AppstoreOutlined/>

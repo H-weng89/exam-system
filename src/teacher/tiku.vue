@@ -18,14 +18,14 @@
     border-radius: 4px;
     width: 100px;
     background-color:#5784ff;
-" @click="start(0)">创建题库</a-button></div>
+" @click="start(1)">创建题库</a-button></div>
         </div>
         <div class="main">
         <a-table :columns="columns" :data-source="data" :pagination="{pageSize:7}"  rowKey="account">
     <template #action="{record}">
       <div class="operate">
  <a @click="toDetail(record)" style="color:#45d793"> 查看 </a>
-      <a @click="start(1)" style="color:#ffbb65">编辑 </a>
+      <a @click="start(2)" style="color:#ffbb65">编辑 </a>
       <a style="color:#dc5716">删除</a>
       </div>
      
@@ -35,10 +35,40 @@
 
   
         </div>
-         <a-modal v-model:visible="visible" title="题库详情" @ok="handleOk" cancelText="取消" okText="确定" >
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
+         <a-modal v-model:visible="visible"  @ok="handleOk" cancelText="取消" okText="确定" >
+           <div class="create">
+             <div class="title" v-if="isCreate">创建题库</div>
+             <div class="title" v-else>编辑题库</div>
+             <div class="main">
+               <a-input v-model:value="create.name" placeholder="Basic usage" style="border-radius: 5px;background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 1px #5783ff;" />
+                <a-select
+    v-model:value="create.role"
+  
+    style="width: 100%;margin-top:10px;border-radius: 5px;"
+    placeholder="Tags Mode"
+    :options="options"
+    @change="handleChange"
+    :showArrow="true"
+  >
+  </a-select>
+   <a-textarea v-model:value="create.description" placeholder="Basic usage" :rows="4"  style="margin-top:10px;border-radius:5px;background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 1px #5783ff;
+}" />
+   <div class="clearfix" style="margin-top:10px;width: 218px;
+	height: 40px;border-radius: 5px;
+	">
+    <a-upload :file-list="create.fileList" :remove="handleRemove" :before-upload="beforeUpload">
+      <a-button style="width:218px;height:30px;border:solid 2px #5783ff;color:#5783ff">
+        <upload-outlined></upload-outlined>
+        Select File
+      </a-button>
+    </a-upload>
+     </div>
+             </div>
+           </div>
     </a-modal>
     </div>
 </template>
@@ -50,11 +80,45 @@
 
 
 import {useRoute,onBeforeRouteUpdate,useRouter} from 'vue-router'
-import { defineComponent, ref,onMounted} from 'vue';
+import { defineComponent, ref,onMounted, reactive} from 'vue';
 export default defineComponent({
  
   
   setup() {
+    //创建题库
+   let create = reactive({
+     name:'',
+     role:[],
+     description:'',
+     fileList:[],
+   })
+   const handleRemove = file => {
+      const index = create.fileList.value.indexOf(file);
+      const newFileList = create.fileList.value.slice();
+      newFileList.splice(index, 1);
+      create.fileList.value = newFileList;
+    };
+    // 文件上传
+    const beforeUpload = file => {
+      create.fileList = [...create.fileList, file];
+      console.log(create.fileList)
+      return false
+ 
+    };
+   //假数据
+   const options = ref([
+      {
+        value: 'jack',
+        label: 'Jack (100)',
+      },
+      {
+        value: 'lucy',
+        label: 'Lucy (101)',
+      },
+    ]);
+        const handleChangeC = (value) => {
+      console.log(value); // { key: "lucy", label: "Lucy (101)" }
+    };
     //查看题库
     function toDetail(record){
       console.log(record)
@@ -62,9 +126,16 @@ export default defineComponent({
       
     }
     //对话框
+    let isCreate = ref(true)
      const visible = ref(false);
     function start(i){
-      i
+        if(i==1){
+          isCreate.value = true
+        }
+        if(i==2){
+          isCreate.value = false
+          //todo 将原有数据赋给create
+        }
       
       visible.value = true
     }
@@ -150,6 +221,12 @@ const value = ref('');
     //表格
 
     return {
+      isCreate,
+      handleRemove,
+      beforeUpload,
+      options,
+      handleChangeC,
+      create,
       focus,
       handleChange,
       value,
@@ -174,6 +251,60 @@ const value = ref('');
 </script>
 
 <style lang="less" scoped>
+.create{
+  width: 100%;
+  height: 100%;
+  
+  .title{
+  margin: auto;
+    font-size: 20px;
+    width: 120px;
+	height: 40px;
+	font-family: Microsoft YaHei;
+	font-size: 30px;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 40px;
+	letter-spacing: 0px;
+	color: #5783ff;
+   
+  }
+  .main{
+    width: 90%;
+    margin: auto;
+    margin-top: 20px;
+    /deep/.ant-select:not(.ant-select-customize-input) .ant-select-selector{
+      border-radius: 5px;
+      background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 1px #5783ff;
+    }
+
+  
+   :global(.ant-modal-footer  button:nth-child(1)){
+       display: none;
+      }
+        :global(.ant-modal-footer  button:nth-child(2)){
+width: 188px;
+	height: 41px;
+	background-color: #5783ff;
+	border-radius: 8px;
+
+      width: 100px;
+     
+      border-radius: 5px;
+      }
+    :global(.ant-modal-footer){
+      display: flex;
+      justify-content: center;
+      button:nth-child(1){
+       
+      }
+   
+      
+    }
+  }
+}
 .wra{
     width: 98% !important;
     height: 95% !important;
@@ -181,26 +312,26 @@ const value = ref('');
     background-color: #eceff8;
     margin: auto;
     margin-top: 20px;
+    
+
     .header{
         width: 40%;
         height: 7%;
         display: flex;
-         margin-bottom: 10px;
        
         justify-content: flex-start;
         margin-left: 20px;
         align-items: center;
         font-size: 20px;
+        margin-bottom: 10px;
         
         .chosen{
           color: #3a4167;
           font-weight: 500;
-          
         }
         .myExam{
             font-size: 20px;
             color: black;
-         
         }
     }
 
@@ -215,7 +346,6 @@ const value = ref('');
         border-radius: 5px;
         background-color: white;
         margin-bottom: 10px;
-       
         .bt{
           border-radius: 10px;
           margin-right: 20px;
@@ -235,8 +365,11 @@ const value = ref('');
         color: #3a4167 !important;
         margin:auto;
         /deep/.ant-table-tbody > tr > td:nth-child(6){
-          color: blue;
+         
 
+        }
+        /deep/.ant-table-thead > tr:first-child > th{
+          background-color:#f6f7fc ;
         }
         .operate{
           display: flex;
@@ -246,8 +379,9 @@ const value = ref('');
            cursor: pointer;
          }
        
-        
+      
     }
 }
+
 
 </style>

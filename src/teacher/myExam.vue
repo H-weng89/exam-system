@@ -1,10 +1,10 @@
 <template>
     <div class="wra">
         <div class="header">
-            <div class="myExam">我的题库</div>
+            <div class="myExam">我的考试</div>
            
-            <div :class="{'ing':1,'chosen':1}">试题管理</div>
-            <div :class="{'end':1,}">题库管理</div>
+            <!-- <div :class="{'ing':1,'chosen':1}">试题管理</div>
+            <div :class="{'end':1,}">题库管理</div> -->
         </div>
         <div class="second">
           
@@ -19,15 +19,16 @@
             <div class="bt"><a-button type="primary" style="
     border-radius: 4px;
     width: 100px;
-" @click="start(0)">添加试题</a-button></div>
+    background-color:#5784ff;
+" @click="toDetail(1)">添加考试</a-button></div>
         </div>
         <div class="main">
         <a-table :columns="columns" :data-source="data" :pagination="{pageSize:8}"  rowKey="account">
     <template #action="{record}">
       <div class="operate">
- <a @click="toDetail(record)"> 查看 </a>
-      <a @click="start(1)">编辑 </a>
-      <a>删除</a>
+ <a @click="toDetail(2,record)" style="color:#45d793"> 查看 </a>
+      <a @click="start(1)" style="color:#ffbb65">编辑 </a>
+      <a style="color:#dc5716">删除</a>
       </div>
      
     </template>
@@ -57,9 +58,11 @@ export default defineComponent({
   
   setup() {
     //查看题库
-    function toDetail(record){
+    function toDetail(i,record){
       console.log(record)
-      router.push({path:'/tikuDetail',query:{key:record}})
+        if(i==1){
+          router.push('/createExam')
+        }
       
     }
     //对话框
@@ -85,7 +88,7 @@ onBeforeRouteUpdate(to => {
       key.value = route.query.key
     })
    const columns = ref([{
-      title: '题干',
+      title: '考试名称',
       width: 100,
       dataIndex: 'name',
       ellipsis: true,
@@ -93,7 +96,7 @@ onBeforeRouteUpdate(to => {
       fixed: 'left',
      
     }, {
-      title: '题目类型',
+      title: '试卷名称',
       width: 100,
       dataIndex: 'age',
       key: 'age',
@@ -101,7 +104,7 @@ onBeforeRouteUpdate(to => {
      
     },
     {
-      title: '所属题库',
+      title: '考试时间',
       width: 100,
       dataIndex: 'age',
       key: 'age',
@@ -109,12 +112,26 @@ onBeforeRouteUpdate(to => {
      
     },
       {
-      title: '查看权限',
+      title: '考试时长',
       width: 100,
       dataIndex: 'age',
       key: 'age',
       fixed: 'left',
      
+    },
+    {
+      title: '，考试总分',
+      dataIndex: 'address',
+      key: '1',
+      width: 150,
+      align: 'center'
+    },
+    {
+      title: '考试人数',
+      dataIndex: 'address',
+      key: '1',
+      width: 150,
+      align: 'center'
     },
      {
      title:'操作',
@@ -127,13 +144,7 @@ onBeforeRouteUpdate(to => {
       
     
       width: 100,
-    }, {
-      title: '最后修改时间',
-      dataIndex: 'address',
-      key: '1',
-      width: 150,
-      align: 'center'
-    }, ]);
+    },  ]);
     const data = [
      
 
@@ -196,7 +207,7 @@ const value = ref('');
     width: 98% !important;
     height: 95% !important;
   
-    background-color: white;
+    background-color: #eceff8;
     margin: auto;
     margin-top: 20px;
     .header{
@@ -204,12 +215,15 @@ const value = ref('');
         height: 7%;
         display: flex;
        
-        justify-content: space-around;
+        justify-content: flex-start;
+        margin-left: 20px;
         align-items: center;
-        font-size: 16px;
-        color: gray;
+        font-size: 20px;
+        margin-bottom: 10px;
+        
         .chosen{
-          color: black;
+          color: #3a4167;
+          font-weight: 500;
         }
         .myExam{
             font-size: 20px;
@@ -220,25 +234,47 @@ const value = ref('');
     .second{
         align-items: center;
         margin-top: 10px;
-        width: 95%;
-        height: 7%;
+        width: 98%;
+        height: 65px;
         display: flex;
         justify-content: space-between;
-        margin-left: 25px;
+        margin: auto;
+        border-radius: 5px;
+        background-color: white;
+        margin-bottom: 10px;
         .bt{
           border-radius: 10px;
+          margin-right: 20px;
+        }
+
+        .search{
+          span{
+ color: #3a4167;
+          }
+         
+          margin-left: 20px;
         }
     }
     .main{
         width: 98%;
-        height: 84%;
+        height: 83%;
+        color: #3a4167 !important;
         margin:auto;
-       
+        /deep/.ant-table-tbody > tr > td:nth-child(6){
+         
+
+        }
+        /deep/.ant-table-thead > tr:first-child > th{
+          background-color:#f6f7fc ;
+        }
         .operate{
           display: flex;
           justify-content: space-around;
         }
-      
+         /deep/.ant-table-tbody > tr > td:nth-child(6):hover{
+           cursor: pointer;
+         }
+       
         
     }
 }

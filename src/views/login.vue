@@ -220,10 +220,30 @@ export default defineComponent({
     background-image: url(../assets/login.png);
     background-repeat: no-repeat;
     background-size: cover;
+
+.main::before{
+   content:'';
+    position:absolute;  /* 固定模糊层位置 */
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    
+    // background:url(../assets/bg.png) no-repeat center center fixed;/* 与上面的 bg 中的background设置一样 */
+    filter:blur(10px) contrast(.8);  /* 值越大越模糊 */
+    z-index:-1;  /* 模糊层在最下面 */
+}
+
     .main{
         display: flex;
-        border: 30px solid rgba(255, 255, 255, 0.1);
+   
         z-index: 1;
+         border: 1px solid ;
+          padding: 20px;
+           
+          
+        
+       
         
       
        
