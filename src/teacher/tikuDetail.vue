@@ -19,7 +19,7 @@
         </div>
         <div class="main">
         <a-table :columns="columns" :data-source="data" :pagination="{pageSize:8}"  rowKey="account">
-    <template #action>
+    <template #action="{record}">
         <div class="opetate">
  <a @click="toDetail(record)" style="color:#45d793">查看</a>
       <a @click="start(1)" style="color:#ffbb65">编辑</a>
@@ -32,10 +32,47 @@
 
   
         </div>
-         <a-modal v-model:visible="visible" title="考试详情" @ok="handleOk" cancelText="取消" okText="确定" >
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
+         <a-modal v-model:visible="visible"  @ok="handleOk" cancelText="取消" okText="确定" >
+  <div class="create">
+             
+             <div class="title">添加试题</div>
+             <div class="main">
+               <div class="problem">
+                 <div class="name">题目</div>
+                   <a-textarea v-model:value="create.name" placeholder="答案与解析" :rows="2"  style="background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 2px #5783ff;"/>
+
+   
+               </div>
+           
+
+
+               
+ <div class="choose" v-if="key==1">
+                 <div class="name">选项</div>
+                 <div class="item" v-for="(item,key) in create.choose" :key="key">
+                   <div class="label">{{item.label}}:</div>
+                    <a-input v-model:value="item.value" placeholder="输入选项" style="background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 2px #5783ff;height:30px" />
+                 </div>
+                 <div class="add"><a-button type="primary" style="width: 130px;
+	height: 30px;
+	background-color: #5783ff;
+	border-radius: 8px;" @click="add">添加选项</a-button></div>
+               </div>
+              
+               <div class="answer">
+                 <div class="name">答案/答案解析</div>
+                 <div class="an">  <a-textarea v-model:value="create.answer" placeholder="答案与解析" :rows="4"  style="background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 2px #5783ff;"/>
+</div>
+
+               </div>
+               </div>            
+           </div>
     </a-modal>
     </div>
 </template>
@@ -47,13 +84,32 @@
 
 
 import {useRoute,onBeforeRouteUpdate} from 'vue-router'
-import { defineComponent, ref,onMounted} from 'vue';
+import { defineComponent, ref,onMounted,reactive} from 'vue';
+import api from '../api/axios'
 export default defineComponent({
  
   
   setup() {
     //对话框
+    
+let data = ref([])
      const visible = ref(false);
+      let create = reactive({
+      name:'',
+      choose:[{label:'A',value:''}],
+      answer:'',
+    
+    })
+
+     let toDetail = (e)=>{
+       create.name = e.body
+       create.choose = [{label:'A',value:e.a},{label:'b',value:e.b},{label:'C',value:e.c},{label:'D',value:e.d}]
+         create.answer = e.ans
+   
+        visible.value = true
+
+
+     }
     function start(i){
       i
       
@@ -69,23 +125,51 @@ export default defineComponent({
 onBeforeRouteUpdate(to => {
      key.value = to.query.key
 });
-    onMounted(()=>{
+
+let type = ref(route.query.type)
+
+    onMounted(async ()=>{
       //根据key获取数据
       key.value = route.query.key
+     let result  = await api.getProblem(key.value).catch(err=>{console.log(err)})
+      data.value = result.data.data.questions
+      console.log(result)
+       if(type.value=='selections'){
+         data.value.forEach(item=>{
+           item.type = '选择题'
+         })
+
+       }
+          if(type.value=='blanks'){
+         data.value.forEach(item=>{
+           item.type = '填空题'
+         })
+
+       }
+        if(type.value=='answerQuestions'){
+         data.value.forEach(item=>{
+           item.type = '大题'
+         })
+
+       }
+       
+
+
+
     })
    const columns = ref([{
       title: '题干',
       width: 100,
-      dataIndex: 'name',
+      dataIndex: 'body',
       ellipsis: true,
-      key: 'name',
+      key: 'body',
       fixed: 'left',
      
     }, {
       title: '题目类型',
       width: 100,
-      dataIndex: 'age',
-      key: 'age',
+      dataIndex: 'type',
+      key: 'type',
       fixed: 'left',
      
     },
@@ -102,21 +186,18 @@ onBeforeRouteUpdate(to => {
     
       width: 50,
     }, ]);
-    const data = [
-     
+   
 
-    ];
-
-    for (let i = 0; i < 100; i++) {
-      data.push({
-        key: i,
-        name: `Edrward ${i}`,
-        age: 32,
-        address: `London Park no. ${i}`,
-        // operation:'进入考试'
+    // for (let i = 0; i < 100; i++) {
+    //   data.push({
+    //     key: i,
+    //     name: `Edrward ${i}`,
+    //     age: 32,
+    //     address: `London Park no. ${i}`,
+    //     // operation:'进入考试'
         
-      });
-    }
+    //   });
+    // }
     
   //学科选择和搜索
 const value = ref('');
@@ -145,7 +226,9 @@ const value = ref('');
  key,
  start,
  handleOk,
- visible
+ visible,
+ toDetail,
+ create
     
  
  
@@ -159,6 +242,119 @@ const value = ref('');
 </script>
 
 <style lang="less" scoped>
+.create{
+  width: 100%;
+  height: 100%;
+     :global(.ant-modal-footer  button:nth-child(1)){
+       display: none;
+      }
+        :global(.ant-modal-footer  button:nth-child(2)){
+width: 188px;
+	height: 41px;
+	background-color: #5783ff;
+	border-radius: 8px;
+
+      width: 100px;
+     
+      border-radius: 5px;
+      }
+    :global(.ant-modal-footer){
+      display: flex;
+      justify-content: center;
+      button:nth-child(1){
+       
+      }
+   
+      
+    }
+  
+  .title{
+  margin: auto;
+    font-size: 20px;
+    width: 120px;
+	height: 40px;
+	font-family: Microsoft YaHei;
+	font-size: 30px;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 40px;
+	letter-spacing: 0px;
+	color: #5783ff;
+   
+  }
+
+  .main{
+    width: 92%;
+    margin: auto;
+    /deep/.ant-tabs-bar{
+      display: flex;
+      justify-content: center;
+    }
+
+    .problem{
+      .name{
+        font-family: Microsoft YaHei;
+	font-size: 16px;
+  color: #5783ff;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 29px;
+	letter-spacing: 0px;
+  margin-bottom: 5px;
+
+      }
+    }
+
+    .choose{
+      .name{
+        font-family: Microsoft YaHei;
+	font-size: 16px;
+  color: #5783ff;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 29px;
+	letter-spacing: 0px;
+  margin-bottom: 5px;
+  margin-top: 10px;
+      }
+      .item{
+        .label{	font-family: Microsoft YaHei;
+	font-size: 16px;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 29px;
+	letter-spacing: 0px;
+	color: #5783ff;
+    margin-right: 10px;
+    
+
+          
+        }
+        display: flex;
+        margin-bottom: 10px;
+      }
+
+      .add{
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 10px;
+      }
+
+    }
+
+    .answer{
+      .name{
+        font-family: Microsoft YaHei;
+	font-size: 16px;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 29px;
+	letter-spacing: 0px;
+	color: #5783ff;
+      }
+    }
+  }
+}
 .wra{
     width: 98% !important;
     height: 95% !important;

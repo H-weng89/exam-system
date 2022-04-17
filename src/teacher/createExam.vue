@@ -18,17 +18,22 @@ width: 270px;
 	height: 35px;
 	background-color: #ffffff;
 	border-radius: 5px;
-	border: solid 2px #3a4167;" />
+	border: solid 1px #3a4167;"  :disabled="isDetail"/>
                     </div>
+                     
                       <div class="item">
-                      <div class="name">*考试发布时间</div>
-                      <a-space direction="vertical">
-    <a-date-picker show-time  :locale="locale"  v-model="form.time"/>
-   
-  </a-space>
+                      <div class="name">考试时长</div>
+                     
+                      <a-input v-model:value="form.duration" placeholder="Basic usage" style="
+width: 270px;
+	height: 35px;
+	background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 1px #3a4167;" :disabled="isDetail" />
+                    </div>
                      
                    
-                    </div>
+                    
                      <div class="item">
                       <div class="name">及格分数线</div>
                      
@@ -37,12 +42,12 @@ width: 270px;
 	height: 35px;
 	background-color: #ffffff;
 	border-radius: 5px;
-	border: solid 2px #3a4167 !important;" />
+	border: solid 1px #3a4167 !important;" :disabled="isDetail" />
                     </div>
                        <div class="item">
                       <div class="name">考试通知时间</div>
                       <a-space direction="vertical">
-    <a-date-picker show-time  :locale="locale" v-model="form.messageTime" />
+    <a-date-picker show-time  :locale="locale" v-model:value="form.messageTime" :disabled="isDetail" />
    
   </a-space>
                      
@@ -51,7 +56,7 @@ width: 270px;
                      <div class="item">
                      <div class="name">考试开始时间</div>
                       <a-space direction="vertical">
-    <a-date-picker show-time  :locale="locale" v-model="form.startTime" />
+    <a-date-picker show-time  :locale="locale" v-model:value="form.startTime" :disabled="isDetail" />
    
   </a-space>
                      
@@ -60,7 +65,7 @@ width: 270px;
                       <div class="item">
                      <div class="name">成绩公布时间</div>
                       <a-space direction="vertical">
-    <a-date-picker show-time  :locale="locale" v-model="form.publicTime" />
+    <a-date-picker show-time  :locale="locale" v-model:value="form.publicTime"  :disabled="isDetail"/>
    
   </a-space>
                      
@@ -74,7 +79,7 @@ width: 270px;
 	height: 35px;
 	background-color: #ffffff;
 	border-radius: 5px;
-	border: solid 2px #3a4167;" />
+	border: solid 1px #3a4167;"  :disabled="isDetail"/>
                     </div>
                      <div class="item">
                       <div class="name">添加试卷</div>
@@ -85,7 +90,7 @@ width: 270px;
       
       "
       
-      
+      :disabled="isDetail"
     
       @search="add(1)"
     >
@@ -106,7 +111,7 @@ width: 270px;
                      <div class="item">
                      <div class="name">考试结束时间</div>
                       <a-space direction="vertical">
-    <a-date-picker show-time  :locale="locale" v-model="form.endTime" />
+    <a-date-picker show-time  :locale="locale" v-model:value="form.endTime"  :disabled="isDetail"/>
    
   </a-space>
                      
@@ -115,20 +120,21 @@ width: 270px;
                       <div class="item">
                      <div class="name">答案公布时间</div>
                       <a-space direction="vertical">
-    <a-date-picker show-time  :locale="locale" v-model="form.answerTime" />
+    <a-date-picker show-time  :locale="locale" v-model:value="form.answerTime"  :disabled="isDetail"/>
    
   </a-space>
                      
                    
                     </div>
                      <div class="item">
-                     <div class="name">考试最晚进入时间</div>
-                      <a-space direction="vertical">
-    <a-date-picker show-time  :locale="locale" v-model="form.latestTime" />
-   
-  </a-space>
+                      <div class="name">多久后不能进入</div>
                      
-                   
+                      <a-input v-model:value="form.latestTime" placeholder="Basic usage" style="
+width: 270px;
+	height: 35px;
+	background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 1px #3a4167;"  :disabled="isDetail"/>
                     </div>
                     <div class="item">
                       <div class="name">考试对象</div>
@@ -162,15 +168,15 @@ width: 270px;
                    <div class="other">
                     <div class="item">
                       <div class="name">其他备注</div>
-                         <a-input v-model:value="form.name" placeholder="Basic usage" style="
+                         <a-input v-model:value="form.other" placeholder="Basic usage" style="
  width: 270px;
 	height: 35px;
 	background-color: #ffffff;
 	border-radius: 5px;
-	border: solid 2px #3a4167;" />
+	border: solid 1px #3a4167;"  :disabled="isDetail"/>
                     </div>
                    </div>
-                   <div class="btn2"> <a-button type="primary" ghost>确定</a-button></div>
+                   <div class="btn2"> <a-button type="primary" ghost @click="create">确定</a-button></div>
         </div>
         
           <a-modal v-model:visible="visible"  @ok="handleOk" cancelText="取消" okText="确定"   width="56%" height="40%" className = "model" >
@@ -199,7 +205,7 @@ width: 11vw;
 	height: 2vw;
 	background-color: #ffffff;
 	border-radius: 5px;
-	border: solid 2px #5783ff;
+	border: solid 1px #5783ff;
   margin-left:10px;
   
   "
@@ -207,15 +213,15 @@ width: 11vw;
       @search="onSearch"
     />
                 </div>
-                <div class="btn" >全部添加</div>
+                <div class="btn"  @click="allAdd(1)">全部添加</div>
               </div>
               <div class="main">
-                <a-table :columns="columns" :data-source="data" :pagination="{pageSize:5}"  rowKey="account">
+                <a-table :columns="columns" :data-source="paper" :pagination="{pageSize:5}"  rowKey="account">
     <template #action="{record}">
       <div class="operate">
- <a @click="start(1,record)" style="color:#45d793" v-if="1">添加 </a>
+ <a @click="start(1,record)" style="color:#45d793" v-if="!record.isChoose">添加 </a>
       <!-- <a @click="start(1,record)" style="color:#ffbb65">查看 </a> -->
-      <a style="color:#dc5716" v-else>移除</a>
+      <a style="color:#dc5716" v-else @click="remove(1,record)">移除</a>
       </div>
     </template>
   </a-table>
@@ -246,7 +252,7 @@ font-family: Microsoft YaHei;
 width: 11vw;
 	height: 2vw;
 	background-color: #ffffff;
-	border-radius: 5px;
+	border-radius: 1px;
 	border: solid 2px #5783ff;
   margin-left:10px;
   
@@ -255,15 +261,15 @@ width: 11vw;
       @search="onSearch"
     />
                 </div>
-                <div class="btn" >全部添加</div>
+                <div class="btn" @click="allAdd(2)" >全部添加</div>
               </div>
               <div class="main">
                 <a-table :columns="columns2" :data-source="data" :pagination="{pageSize:5}"  rowKey="account">
     <template #action="{record}">
       <div class="operate">
- <a @click="start(1,record)" style="color:#45d793" v-if="1">添加 </a>
+ <a @click="start(2,record)" style="color:#45d793" v-if="!record.isChoose">添加 </a>
       <!-- <a @click="start(1,record)" style="color:#ffbb65">查看 </a> -->
-      <a style="color:#dc5716" v-else>移除</a>
+      <a style="color:#dc5716" v-else @click="remove(2,record)">移除</a>
       </div>
     </template>
   </a-table>
@@ -277,15 +283,21 @@ width: 11vw;
           </div>
 </template>
 <script>
-import { defineComponent, reactive,ref } from 'vue';
-import {useRouter} from 'vue-router'
+import { defineComponent, reactive,ref,onMounted } from 'vue';
+import {useRouter,useRoute} from 'vue-router';
+import api from '../api/axios'
  import locale from 'ant-design-vue/es/date-picker/locale/zh_CN';
  import moment from 'moment';
   import 'moment/dist/locale/zh-cn';
+import { message } from 'ant-design-vue';
 export default defineComponent({
   setup() {
     //试卷数据
-       const columns = ref([{
+        let isDetail = ref(false)
+        let handleOk = ()=>{
+          visible.value = false
+        }
+      const columns = ref([{
       title: '试卷名称',
       width: 100,
       dataIndex: 'name',
@@ -296,8 +308,8 @@ export default defineComponent({
     }, {
       title: '试卷总分',
       width: 100,
-      dataIndex: 'age',
-      key: 'age',
+      dataIndex: 'scores',
+      key: 'scores',
       fixed: 'left',
      
     },
@@ -315,6 +327,65 @@ export default defineComponent({
     
       width: 50,
     },]);
+
+    let paper = ref([])
+
+    let route = useRoute()
+
+
+onMounted(async ()=>{
+  //获取试卷
+   let paperR = await api.getPaper(sessionStorage.getItem('id'))
+  paper
+ 
+    let arr = paperR.data.data
+   
+    arr.forEach((item,key)=>{
+      if(key==0){
+        return 
+      }
+      item.body = JSON.parse(item.body) 
+      item.name = item.body[item.body.length-2].name
+      item.isChoose = false
+    })
+
+    paper.value = arr
+   
+
+   //获取学生列表
+   let studentR = await api.getStudent1()
+    data.value = studentR.data.data
+    data.value.forEach(item=>{
+      item.isChoose = false
+    })
+
+    //如果从查看来
+    let id = route.query.id
+    if(id){
+      isDetail.value = true  
+      let body = JSON.parse(route.query.main)
+      console.log(body)
+       form.name = body.name,
+         form.startTime = body.startTime,
+         form.endTime=body.endTime,
+         form.publicTime=body.publicTime,
+         form.pass=body.passScore,
+         form.num=body.chance,
+         form.examList[0] = body.examPaperId,
+         form.latestTime=body.limitTime,
+         form.messageTime=body.infoTime,
+         form.duration=body.uration,
+         form.other = body.notes,
+         form.id = id
+         form.exam = '已选择'
+         form.group = '已选择'
+         
+
+      message.info('暂时只提供添加学生功能')  }
+    
+        })
+
+
      const columns2 = ref([{
       title: '姓名',
       width: 100,
@@ -326,23 +397,23 @@ export default defineComponent({
     }, {
       title: '学校',
       width: 100,
-      dataIndex: 'age',
-      key: 'age',
+      dataIndex: 'school',
+      key: 'school',
       fixed: 'left',
      
     },
     {
       title: '专业班级',
       width: 100,
-      dataIndex: 'age',
-      key: 'age',
+      dataIndex: 'profession',
+      key: 'profession',
       fixed: 'left',
      
     },{
       title: '学号',
       width: 100,
-      dataIndex: 'age',
-      key: 'age',
+      dataIndex: 'no',
+      key: 'no',
       fixed: 'left',
      
     },
@@ -360,21 +431,100 @@ export default defineComponent({
     
       width: 50,
     },]);
-    const data = [
+    let  data = ref([
      
 
-    ];
+    ]);
 
-    for (let i = 0; i < 100; i++) {
-      data.push({
-        key: i,
-        name: `Edrward ${i}`,
-        age: 32,
-        address: `London Park no. ${i}`,
-        // operation:'进入考试'
-        
-      });
+  let start = (key,record)=>{
+    if(key==1){
+
+      if(form.examList.length>0){
+        message.warn('只能选择一张试卷')
+        return 
+      }
+      record.isChoose = true
+      form.exam = record.name
+      
+      form.examList.push(record.id)
     }
+
+    else{
+         record.isChoose = true
+         form.group = '已选择'
+      form.groupList.push(record.id)
+    }
+    console.log(form)
+  }
+
+
+  let remove = (key,record)=>{
+    if(key==1){
+      form.examList.splice(0,1)
+      record.isChoose = false
+      record.name = ''
+      
+    }
+    else{
+      form.groupList.forEach((item,key)=>{
+        if(item==record.id){
+          form.groupList.splice(key,1)
+          record.isChoose = false
+          return
+        }
+      })
+    }
+     
+  }
+
+  let allAdd = (key)=>{
+    if(key==2){
+      form.group = '已选择'
+      data.value.forEach(item=>{
+        if(!item.isChoose){
+          item.isChoose = true
+          form.groupList.push(item.id)
+        }
+      })
+    }
+  }
+   
+   //创建
+   let create = async ()=>{
+
+     if(isDetail.value){
+       let body = {
+         examID:form.id,
+         students:form.groupList
+       }
+
+     let result = await api.addStudent1(body)
+      message.success(result.data.msg)
+     return 
+       
+     }
+     let data = {
+       exam:{
+         name:form.name,
+         startTime:form.startTime,
+         endTime:form.endTime,
+         publicTime:form.publicTime,
+         passScore:form.pass,
+         chance:form.num,
+         examPaperId:form.examList[0],
+         limitTime:form.latestTime,
+         infoTime:form.messageTime,
+         duration:form.duration,
+         notes:form.other
+       },
+       students:[...new Set(form.groupList)]
+     }
+  let result = await api.createExam(data)
+  console.log(result)
+  message.info(result.data.msg)
+  router.go(-1)
+
+   }
     //添加试卷和添加对象
     let  flag = ref(false)  //1添加试卷 2添加对象
     let visible = ref(false)
@@ -411,14 +561,9 @@ moment.locale('zh-cn')
         latestTime:'',
         group:'',
         other:'',
-        examList:[ {
-        value: 'jack',
-        label: 'Jack (100)',
-      },],
-       groupList:[ {
-        value: 'jack',
-        label: 'Jack (100)',
-      },]
+        examList:[],
+       groupList:[],
+       duration:''
     })
 
     return {
@@ -430,7 +575,14 @@ moment.locale('zh-cn')
         visible,
         columns,
         data,
-        columns2
+        columns2,
+        paper,
+        start,
+        remove,
+        allAdd, 
+        create,
+        handleOk,
+        isDetail
      
     };
   },
@@ -585,6 +737,14 @@ width: 188px;
     }
 
     .item{ 
+         /deep/.ant-input{
+     border:  1px solid #3a4167;
+     border-right: 0;
+     }
+     /deep/.ant-btn{
+        height: 32px;
+    border: 1px solid #3a4167;
+     }
       /deep/ .ant-btn-primary{
         background-color: #ffffff !important;
       }
@@ -594,7 +754,7 @@ width: 188px;
 	height: 35px;
 	background-color: #ffffff;
 	border-radius: 5px;
-	border: solid 2px #3a4167;
+	border: solid 1px #3a4167;
         }
 
         /deep/.ant-select:not(.ant-select-customize-input) .ant-select-selector{
@@ -602,7 +762,7 @@ width: 188px;
 	height: 35px;
 	background-color: #ffffff;
 	border-radius: 5px;
-	border: solid 2px #3a4167;
+	border: solid 1px #3a4167;
         }
    
     

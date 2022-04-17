@@ -1,33 +1,34 @@
 <template>
     <div class="wra">
         <div class="header">
-            <div class="myExam">我的试卷</div>
+            <div class="myExam">成绩管理</div>
            
-            
+            <!-- <div :class="{'ing':1,'chosen':1}">试题管理</div>
+            <div :class="{'end':1,}">题库管理</div> -->
         </div>
         <div class="second">
           
             <div class="search">
-                 试卷名称：<a-input-search
+                 考试名称：<a-input-search
       v-model:value="value"
       placeholder="请输入"
       style="width: 250px"
       @search="onSearch"
     />
             </div>
-             <div class="bt"><a-button type="primary" style="
+            <div class="bt"><a-button type="primary" style="
     border-radius: 4px;
     width: 100px;
     background-color:#5784ff;
-" @click="start(0)">创建试卷</a-button></div>
+" @click="toDetail(1)">添加考试</a-button></div>
         </div>
         <div class="main">
         <a-table :columns="columns" :data-source="data" :pagination="{pageSize:8}"  rowKey="account">
     <template #action="{record}">
       <div class="operate">
- <a @click="toDetail(record)" style="color:#45d793"> 查看 </a>
-      <!-- <a @click="start(1)" style="color:#ffbb65">编辑 </a> -->
-      <a style="color:#dc5716">删除</a>
+ <a @click="toDetail(1,record)" style="color:#45d793">成绩分析</a>
+      <!-- <a @click="start(1)" style="color:#ffbb65">编辑 </a>
+      <a style="color:#dc5716">删除</a> -->
       </div>
      
     </template>
@@ -52,29 +53,27 @@
 
 import {useRoute,onBeforeRouteUpdate,useRouter} from 'vue-router'
 import { defineComponent, ref,onMounted} from 'vue';
-import api from '../api/axios'
 export default defineComponent({
  
   
   setup() {
     //查看题库
-    function toDetail(record){
+    function toDetail(i,record){
       console.log(record)
-       router.push({path:'/createPaper',query:{main:JSON.stringify(record)}})
+        if(i==1){
+          router.push('/recordA')
+        }
       
     }
     //对话框
      const visible = ref(false);
     function start(i){
-        if(i==0){
-          router.push('/createPaper')
-          visible.value = false
-        }
-   
+      i
+      
+      visible.value = true
     }
     const handleOk = e => {
       console.log(e);
-         
       visible.value = false;
     };
     //判断
@@ -84,49 +83,45 @@ export default defineComponent({
 onBeforeRouteUpdate(to => {
      key.value = to.query.key
 });
-
-let data = ref([])
-    onMounted(async ()=>{
+    onMounted(()=>{
       //根据key获取数据
       key.value = route.query.key
-
-      let result = await api.getPaper(sessionStorage.getItem('id'))
-       let list = result.data.data 
-       list.forEach((item,index)=>{
-         if(index==0){
-           return 
-         }
-         let body = JSON.parse(item.body)
-        
-         let name = body[body.length-2].name
-         let role = body[body.length-1].role.value
-         let i = {name:name,role:role,scores:item.scores,main:item.body,id:item.id}
-
-         data.value.push(i)
-         
-       })
-   console.log(data.value)
-
-
     })
    const columns = ref([{
-      title: '试卷名称',
-      width: 150,
+      title: '考试名称',
+      width: 100,
       dataIndex: 'name',
+      ellipsis: true,
       key: 'name',
       fixed: 'left',
      
     }, {
-      title: '试卷总分',
+      title: '试卷名称',
       width: 100,
-      dataIndex: 'scores',
-      key: 'scores',
+      dataIndex: 'age',
+      key: 'age',
       fixed: 'left',
      
     },
     {
-      title: '查看权限',
-      dataIndex: 'role',
+      title: '考试时间',
+      width: 100,
+      dataIndex: 'age',
+      key: 'age',
+      fixed: 'left',
+     
+    },
+      
+    {
+      title: '，考试总分',
+      dataIndex: 'address',
+      key: '1',
+      width: 150,
+      align: 'center'
+    },
+    {
+      title: '考试人数',
+      dataIndex: 'address',
       key: '1',
       width: 150,
       align: 'center'
@@ -141,9 +136,24 @@ let data = ref([])
     },
       
     
-      width: 50,
+      width: 100,
     },  ]);
-  
+    const data = [
+     
+
+    ];
+
+    for (let i = 0; i < 100; i++) {
+      data.push({
+        key: i,
+        name: `Edrward ${i}`,
+        age: 32,
+        address: `London Park no. ${i}`,
+        // operation:'进入考试'
+        
+      });
+    }
+    
   //学科选择和搜索
 const value = ref('');
 
@@ -186,7 +196,6 @@ const value = ref('');
 </script>
 
 <style lang="less" scoped>
-
 .wra{
     width: 98% !important;
     height: 95% !important;

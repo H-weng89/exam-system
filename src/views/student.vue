@@ -28,26 +28,12 @@
           <MailOutlined />
         </template>
         <template #title>考试</template>
-        <a-menu-item key="1"><span class="circle"></span>未开始</a-menu-item>
+     
         <a-menu-item key="2"><span class="circle"></span>进行中</a-menu-item>
         <a-menu-item key="3"><span class="circle"></span>已结束</a-menu-item>
 
       </a-sub-menu>
-        <a-menu-item key="4">
-        <template #icon>
-          <AppstoreOutlined/>
-        </template>
-     个人信息
-      </a-menu-item>
-      <a-sub-menu key="sub4">
-        <template #icon>
-          <SettingOutlined />
-        </template>
-        <template #title>通知</template>
-        <a-menu-item key="5">考试通知</a-menu-item>
-        <a-menu-item key="6">系统通知</a-menu-item>
-   
-      </a-sub-menu>
+       
     </a-menu>
 
         </div>
@@ -65,14 +51,13 @@
 import { defineComponent,reactive,toRefs,ref } from 'vue';
 import header1 from '../components/header.vue'
 import {useRouter} from 'vue-router'
-import { MailOutlined,SettingOutlined, AppstoreOutlined } from '@ant-design/icons-vue';
+import { MailOutlined, } from '@ant-design/icons-vue';
 
 export default defineComponent({
   components: {
  header1,
   MailOutlined,
-AppstoreOutlined,
-    SettingOutlined,
+
   },
   setup() {
     //路由

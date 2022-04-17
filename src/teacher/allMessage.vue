@@ -37,11 +37,104 @@
 
   
         </div>
-         <a-modal v-model:visible="visible" title="题库详情" @ok="handleOk" cancelText="取消" okText="确定" >
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
+         <a-modal v-model:visible="visible"  @ok="handleOk" cancelText="取消" okText="确定发布" height="58%" width="46%" >
+           <div class="create">
+           
+             <div class="title">发布通知</div>
+             <div class="main">
+               <div class="name">具体消息</div>
+               <a-textarea v-model:value="message" placeholder="Basic usage" :rows="4"  style=" width: 100%;
+	height: 19vh;
+ 
+	background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 2px #5783ff;"/>
+             </div>
+             <div class="foot">
+              
+                <div class="item">
+                      <div class="name">考试对象</div>
+                      <a-input-search
+      v-model:value="group"
+      placeholder="input search text"
+      style="width:270px;
+      border-radius:5px;
+      
+      "
+      
+      
+    
+      @search="add(1)"
+    >
+      <template #enterButton>
+      <a-button>
+        +
+      </a-button>
+
+       
+      
+      
+      </template>
+    </a-input-search>
+
+                     
+                     
+                    </div>
+
+
+             </div>
+           </div>
     </a-modal>
+     <a-modal v-model:visible="visible1"  @ok="handleOk" cancelText="取消" okText="确定"   width="56%" height="40%" className = "model" >
+          
+           <div class="add" >
+              <div class="title">
+                添加试卷
+              </div>
+              <div class="header">
+                <div class="search" style="font-family: Microsoft YaHei;
+font-family: Microsoft YaHei;
+	font-size: 1vw;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 2vw;
+	letter-spacing: 0vw;
+	color: #5783ff;
+  display:flex;
+   justify-content: center;
+   align-items:center;">
+                  试卷名称: <a-input-search
+      v-model:value="value"
+      placeholder="input search text"
+      style="
+width: 11vw;
+	height: 2vw;
+	background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 1px #5783ff;
+  margin-left:10px;
+  
+  "
+
+      @search="onSearch"
+    />
+                </div>
+                <div class="btn" >全部添加</div>
+              </div>
+              <div class="main">
+                <a-table :columns="columns2" :data-source="data" :pagination="{pageSize:5}"  rowKey="account">
+    <template #action="{record}">
+      <div class="operate">
+ <a @click="start(1,record)" style="color:#45d793" v-if="1">添加 </a>
+      <!-- <a @click="start(1,record)" style="color:#ffbb65">查看 </a> -->
+      <a style="color:#dc5716" v-else>移除</a>
+      </div>
+    </template>
+  </a-table>
+
+              </div>
+           </div>
+     </a-modal>
     </div>
 </template>
 
@@ -63,7 +156,17 @@ export default defineComponent({
       router.push({path:'/tikuDetail',query:{key:record}})
       
     }
+    //添加对象
+    let visible1 = ref(false)
+    let add = (i)=>{
+      if(i==1){
+        visible1.value = true
+      }
+    }
     //对话框
+    //消息
+    let group = ref('')
+    let message = ref('')
      const visible = ref(false);
     function start(i){
       i
@@ -110,6 +213,51 @@ onBeforeRouteUpdate(to => {
      
     },
        ]);
+        const columns2 = ref([{
+      title: '姓名',
+      width: 100,
+      dataIndex: 'name',
+      ellipsis: true,
+      key: 'name',
+      fixed: 'left',
+     
+    }, {
+      title: '学校',
+      width: 100,
+      dataIndex: 'age',
+      key: 'age',
+      fixed: 'left',
+     
+    },
+    {
+      title: '专业班级',
+      width: 100,
+      dataIndex: 'age',
+      key: 'age',
+      fixed: 'left',
+     
+    },{
+      title: '学号',
+      width: 100,
+      dataIndex: 'age',
+      key: 'age',
+      fixed: 'left',
+     
+    },
+ 
+     
+     {
+     title:'操作',
+      key: 'operation',
+      dataIndex:'operation',
+      align: 'center',
+       slots: {
+      customRender: 'action',
+    },
+      
+    
+      width: 50,
+    },]);
     const data = [
      
 
@@ -154,7 +302,12 @@ const value = ref('');
  start,
  handleOk,
  visible,
- toDetail
+ toDetail,
+ message,
+ group,
+ visible1,
+ add,
+ columns2
     
  
  
@@ -168,6 +321,138 @@ const value = ref('');
 </script>
 
 <style lang="less" scoped>
+  .add{
+  :global(.ant-input-affix-wrapper .ant-input-suffix :not(.anticon)){
+    color: #5783ff;;
+  }
+   .title{
+
+    width: 180px;
+	height: 40px;
+	font-family: Microsoft YaHei;
+	font-size: 30px;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 40px;
+	letter-spacing: 0px;
+	color: #5783ff;
+  margin: auto;
+  }
+  .header{
+    width: 96%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    margin-top: 30px;
+    .btn:hover{
+      cursor: pointer;
+    }
+    .btn{
+      width: 7vw;
+	height: 2vw;
+	border-radius: 5px;
+	border: solid 2px #51cc71;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  font-family: Microsoft YaHei;
+	font-size: 1vw;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 2vw;
+	letter-spacing: 0vw;
+	color: #2ec255;
+    }
+  }
+  .main{
+        /deep/.ant-table-thead > tr:first-child > th{
+          background-color:#f6f7fc ;
+        }
+  }
+
+}
+.create{
+  
+  // :global(.ant-btn){
+  //   height: 34px;
+  //   border: 2px solid #5783ff;
+  // }
+    
+   :global(.ant-modal-footer  button:nth-child(1)){
+       display: none;
+      }
+        :global(.ant-modal-footer  button:nth-child(2)){
+width: 188px;
+	height: 41px;
+	background-color: #5783ff;
+	border-radius: 8px;
+
+      width: 100px;
+      margin: auto;
+     
+      border-radius: 5px;
+      }
+  width: 100%;
+  height: 100%;
+  
+  .title{
+  margin: auto;
+    font-size: 20px;
+    width: 120px;
+	height: 40px;
+	font-family: Microsoft YaHei;
+	font-size: 30px;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 40px;
+	letter-spacing: 0px;
+	color: #5783ff;
+   
+  }
+  .main{
+    width: 90%;
+     display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+    margin: auto;
+    .name{
+      font-family: Microsoft YaHei;
+	font-size: 2vh;
+	font-weight: normal;
+	font-stretch: normal;
+	line-height: 3vh;
+	letter-spacing: 0vh;
+	color: #5783ff;
+    }
+    .detail{
+      width: 100%;
+	height: 19vh;
+ 
+	background-color: #ffffff;
+	border-radius: 5px;
+	border: solid 2px #5783ff;
+    }
+    margin-bottom: 40px;
+  }
+  .foot{
+    margin-top: 100px;
+    width: 90%;
+     display: flex;
+     margin: auto;
+     /deep/.ant-input{
+     border:  2px solid #5783ff;
+     border-right: 0;
+     }
+     /deep/.ant-btn{
+        height: 34px;
+    border: 2px solid #5783ff;
+     }
+   
+  }
+}
 .wra{
     width: 98% !important;
     height: 95% !important;
@@ -227,6 +512,7 @@ const value = ref('');
         height: 83%;
         color: #3a4167 !important;
         margin:auto;
+       
         /deep/.ant-table-tbody > tr > td:nth-child(6){
          
 

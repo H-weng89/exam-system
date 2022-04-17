@@ -40,33 +40,43 @@
              <div class="title" v-if="isCreate">创建题库</div>
              <div class="title" v-else>编辑题库</div>
              <div class="main">
-               <a-input v-model:value="create.name" placeholder="Basic usage" style="border-radius: 5px;background-color: #ffffff;
+               <a-input v-model:value="create.name" placeholder="题库名称" style="border-radius: 5px;background-color: #ffffff;
 	border-radius: 5px;
 	border: solid 1px #5783ff;" />
                 <a-select
     v-model:value="create.role"
   
     style="width: 100%;margin-top:10px;border-radius: 5px;"
-    placeholder="Tags Mode"
+    placeholder="访问权限"
     :options="options"
     @change="handleChange"
     :showArrow="true"
   >
   </a-select>
-   <a-textarea v-model:value="create.description" placeholder="Basic usage" :rows="4"  style="margin-top:10px;border-radius:5px;background-color: #ffffff;
+    <a-select
+    v-model:value="create.type"
+  
+    style="width: 100%;margin-top:10px;border-radius: 5px;"
+    placeholder="题目类型"
+    :options="options1"
+    @change="handleChange"
+    :showArrow="true"
+  >
+  </a-select>
+   <a-textarea v-model:value="create.description" placeholder="题库说明" :rows="4"  style="margin-top:10px;border-radius:5px;background-color: #ffffff;
 	border-radius: 5px;
 	border: solid 1px #5783ff;
 }" />
-   <div class="clearfix" style="margin-top:10px;width: 218px;
+   <!-- <div class="clearfix" style="margin-top:10px;width: 218px;
 	height: 40px;border-radius: 5px;
 	">
     <a-upload :file-list="create.fileList" :remove="handleRemove" :before-upload="beforeUpload">
       <a-button style="width:218px;height:30px;border:solid 2px #5783ff;color:#5783ff">
         <upload-outlined></upload-outlined>
-        Select File
-      </a-button>
+        选择文件上传
+      </a-button> 
     </a-upload>
-     </div>
+     </div> -->
              </div>
            </div>
     </a-modal>
@@ -78,9 +88,10 @@
 
 
 
-
+ import api from '../api/axios'
+ import { message } from 'ant-design-vue';
 import {useRoute,onBeforeRouteUpdate,useRouter} from 'vue-router'
-import { defineComponent, ref,onMounted, reactive} from 'vue';
+import { defineComponent, ref,onMounted, reactive,} from 'vue';
 export default defineComponent({
  
   
@@ -88,10 +99,25 @@ export default defineComponent({
     //创建题库
    let create = reactive({
      name:'',
-     role:[],
+     role:null,
      description:'',
      fileList:[],
+     type:null
    })
+   var data = ref([])
+
+   let getdata = async ()=>{
+     let result = await api.getStore()
+     data.value = result.data.data
+     data.value.forEach(async item=>{
+               let result = await api.getProblem(item.id)
+               item.size = result.data.data.size
+     })
+
+
+     console.log(result,data)
+
+   }
    const handleRemove = file => {
       const index = create.fileList.value.indexOf(file);
       const newFileList = create.fileList.value.slice();
@@ -108,13 +134,25 @@ export default defineComponent({
    //假数据
    const options = ref([
       {
-        value: 'jack',
-        label: 'Jack (100)',
+        value: true,
+        label: '公开',
       },
       {
-        value: 'lucy',
-        label: 'Lucy (101)',
+        value: false,
+        label: '私有',
       },
+    ]);
+    const options1 = ref([
+      {
+        value: 'selections',
+        label: '选择题',
+      },
+      {
+        value: 'blanks',
+        label: '填空题',
+      },
+      {value:'answerQuestions',
+      label:'大题'}
     ]);
         const handleChangeC = (value) => {
       console.log(value); // { key: "lucy", label: "Lucy (101)" }
@@ -122,7 +160,7 @@ export default defineComponent({
     //查看题库
     function toDetail(record){
       console.log(record)
-      router.push({path:'/tikuDetail',query:{key:record}})
+      router.push({path:'/tikuDetail',query:{key:record.id,type:record.type}})
       
     }
     //对话框
@@ -139,9 +177,21 @@ export default defineComponent({
       
       visible.value = true
     }
-    const handleOk = e => {
-      console.log(e);
+    const handleOk = async e => {
+e                   
+console.log(create.type)
+      let data = {name:create.name,isPublic:create.role,description:create.description,type:create.type}
+      let result = await  api.createStore(data)
+      console.log(result)
+      if(result.data.msg=='设置题库成功'){
+         message.success('创建成功')
+      }
+      else{
+        message.warn(result.data.msg)
+      }
+     
       visible.value = false;
+      getdata()
     };
     //判断
     let route = useRoute()
@@ -153,6 +203,9 @@ onBeforeRouteUpdate(to => {
     onMounted(()=>{
       //根据key获取数据
       key.value = route.query.key
+
+      //数据初始化
+      getdata()
     })
    const columns = ref([{
       title: '题库名称',
@@ -164,9 +217,10 @@ onBeforeRouteUpdate(to => {
     }, {
       title: '试题数量',
       width: 100,
-      dataIndex: 'age',
-      key: 'age',
+      dataIndex: 'size',
+      key: 'size',
       fixed: 'left',
+      align:'center'
      
     },
      {
@@ -180,28 +234,28 @@ onBeforeRouteUpdate(to => {
       
     
       width: 50,
-    }, {
+    }, 
+    {
       title: '最后修改时间',
-      dataIndex: 'address',
-      key: '1',
-      width: 150,
-      align: 'center'
-    }, ]);
-    const data = [
+      width: 100,
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      fixed: 'left',
+      align:'center'
      
+    } ]);
+  
 
-    ];
-
-    for (let i = 0; i < 100; i++) {
-      data.push({
-        key: i,
-        name: `Edrward ${i}`,
-        age: 32,
-        address: `London Park no. ${i}`,
-        // operation:'进入考试'
+    // for (let i = 0; i < 100; i++) {
+    //   data.push({
+    //     key: i,
+    //     name: `Edrward ${i}`,
+    //     age: 32,
+    //     address: `London Park no. ${i}`,
+    //     // operation:'进入考试'
         
-      });
-    }
+    //   });
+    // }
     
   //学科选择和搜索
 const value = ref('');
@@ -237,7 +291,8 @@ const value = ref('');
  start,
  handleOk,
  visible,
- toDetail
+ toDetail,
+ options1
     
  
  

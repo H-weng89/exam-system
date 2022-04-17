@@ -18,7 +18,7 @@
     ref="formRef"
     name="custom-validation"
     :model="formState"
-    :rules="rules"
+
     v-bind="layout"
     @finish="handleFinish"
     @validate="handleValidate"
@@ -26,7 +26,7 @@
   >
     
     <a-form-item has-feedback label="邮箱" name="mail">
-      <a-input v-model:value="formState.main" type="text" autocomplete="off" placeholder="请输入邮箱" />
+      <a-input v-model:value="formState.mail" type="text" autocomplete="off" placeholder="请输入邮箱" />
     </a-form-item>
     <a-form-item has-feedback label="密码" name="pass">
       <a-input v-model:value="formState.pass" type="password" autocomplete="off" placeholder="请输入密码" />
@@ -59,7 +59,7 @@
     </div>
  
     <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-      <a-button type="primary" html-type="submit" size = "middle" block = true>注册</a-button>
+      <a-button type="primary" html-type="submit" size = "middle" block = true @click="register">注册</a-button>
      
     </a-form-item>
   </a-form>
@@ -76,6 +76,9 @@
 
 <script>
 import { defineComponent, ref,reactive } from 'vue';
+import {useRouter}from 'vue-router'
+import api from '../api/axios'
+import { message } from 'ant-design-vue';
 export default defineComponent({
   setup() {
       //表单
@@ -90,29 +93,11 @@ export default defineComponent({
 
 
         //邮箱验证
-    let validatePass = async (_rule, value) => {
-      if (value === '') {
-        return Promise.reject('Please input the password');
-      } else {
-        if (formState.checkPass !== '') {
-          formRef.value.validateFields('checkPass');
-        }
-
-        return Promise.resolve();
-      }
-    };
-
+   
+ let router = useRouter()
   
 
-    const rules = {
-      mail: [{
-        validator: validatePass,
-        trigger: 'change',
-        
-      }],
-    
-    
-    };
+ 
     const layout = {
       labelCol: {
         span: 4,
@@ -130,28 +115,69 @@ export default defineComponent({
       console.log(errors);
     };
 
-  
+   let code = ref('')
 
     const handleValidate = (...args) => {
       console.log(args);
     };
     //获取邮箱验证码
     let loading = ref(true)
-    function getCode(){
+   async  function  getCode(){
         loading.value = false
+        let data = {
+          "username": formState.mail, //用户名
+"password": formState.pass, //密码
+"mail": formState.mail,
+"role": formState.select,
+"name": "",
+"no": "",
+"school": "",
+"profession": ""
+        }
+
+        let result = await api.getCode(data)
+       
+        if(result.data){
+          loading.value = true
+          message.info(result.data.msg)
+          code.value = result.data.data
+        }
+        console.log(result)
+
+
+    }
+
+    let register = async  ()=>{
+         let data = {
+          "username": formState.mail, //用户名
+          code:formState.code
+
+        }
+  let result = await api.register(data).catch(err=>{
+    message.info('可能邮箱已注册')
+    err
+  })
+    message.info(result.data.msg)
+    if(result.data.msg=='注册成功'){
+      router.go(-1)
+    }
+    
+
+    
+
     }
     return {
       activeKey: ref('1'), //登录方式
       //表单
       formState,
       formRef,
-      rules,
+ 
       layout,
       handleFinishFailed,
       handleFinish,
       loading,
       getCode,
-   
+    register,
       handleValidate,
 
 

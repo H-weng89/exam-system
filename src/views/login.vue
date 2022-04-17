@@ -16,7 +16,7 @@
     ref="formRef"
     name="custom-validation"
     :model="formState"
-    :rules="rules"
+  
     v-bind="layout"
     @finish="handleFinish"
     @validate="handleValidate"
@@ -24,7 +24,7 @@
   >
     
     <a-form-item has-feedback label="邮箱" name="mail">
-      <a-input v-model:value="formState.main" type="text" autocomplete="off"  placeholder="请输入邮箱"/>
+      <a-input v-model:value="formState.mail" type="text" autocomplete="off"  placeholder="请输入邮箱"/>
     </a-form-item>
     <a-form-item has-feedback label="密码" name="pass">
       <a-input v-model:value="formState.pass" type="password" autocomplete="off" placeholder="请输入密码" />
@@ -47,7 +47,7 @@
     </div>
  
     <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-      <a-button type="primary" html-type="submit" size = "middle" block = true>登录</a-button>
+      <a-button type="primary" html-type="submit" size = "middle" block = true >登录</a-button>
      
     </a-form-item>
   </a-form>
@@ -59,7 +59,7 @@
     ref="formRef"
     name="custom-validation"
     :model="formState"
-    :rules="rules"
+   
     v-bind="layout"
     @finish="handleFinish"
     @validate="handleValidate"
@@ -67,7 +67,7 @@
   >
     
     <a-form-item has-feedback label="邮箱" name="mail">
-      <a-input v-model:value="formState.main" type="text" autocomplete="off" placeholder="请输入邮箱" />
+      <a-input v-model:value="formState.mail" type="text" autocomplete="off" placeholder="请输入邮箱" />
     </a-form-item>
     <a-form-item has-feedback label="验证码" name="pass" class="code">
       <a-input v-model:value="formState.code" type="password" autocomplete="off" placeholder="请输入验证码"  >
@@ -114,8 +114,10 @@
 </template>
 
 <script>
+import api from '../api/axios'
 import {useRouter} from 'vue-router'
-import { defineComponent, ref,reactive } from 'vue';
+import { defineComponent, ref,reactive,watch } from 'vue';
+import { message } from 'ant-design-vue';
 export default defineComponent({
   setup() {
       //表单
@@ -130,30 +132,23 @@ export default defineComponent({
     });
 
 
-        //邮箱验证
-    let validatePass = async (_rule, value) => {
-      if (value === '') {
-        return Promise.reject('Please input the password');
-      } else {
-        if (formState.checkPass !== '') {
-          formRef.value.validateFields('checkPass');
-        }
+        // 邮箱验证
+    // let validatePass = async (_rule, value) => {
+    //   if (value === '') {
+    //     return Promise.reject('Please input the password');
+    //   } else {
+    //     if (formState.checkPass !== '') {
+    //       formRef.value.validateFields('checkPass');
+    //     }
 
-        return Promise.resolve();
-      }
-    };
+    //     return Promise.resolve();
+    //   }
+    // };
 
   
 
-    const rules = {
-      mail: [{
-        validator: validatePass,
-        trigger: 'change',
-        
-      }],
-    
-    
-    };
+
+
     const layout = {
       labelCol: {
         span: 4,
@@ -163,8 +158,26 @@ export default defineComponent({
       },
     };
 
-    const handleFinish = values => {
-      console.log(values, formState);
+    const handleFinish = async values => {
+      let data = {username:values.mail,
+      password:values.pass}
+      let result = await api.login(data)
+      console.log(result)
+         if(result.data.msg =='登录成功'){
+           api.setToken()
+         
+           sessionStorage.setItem('tokenName',result.data.data.tokenName)
+           sessionStorage.setItem('token',result.data.data.tokenValue)
+           sessionStorage.setItem('id',result.data.data.loginId)
+           if(formState.select == 'teacher'){
+             router.push('/teacher')
+           }
+           if(formState.select=='student'){
+             router.push('/student')
+           }
+
+
+         }
     };
 
     const handleFinishFailed = errors => {
@@ -188,13 +201,20 @@ export default defineComponent({
      function forget(){
         router.push('/forget')
      }
-
+  let activeKey = ref('1')
+  watch(activeKey,newv=>{
+    if(newv==2){
+      message.info('邮箱登录暂未开放')
+    }
+  })
     return {
-      activeKey: ref('1'), //登录方式
+       //登录方式
       //表单
+      activeKey,
+     
       formState,
       formRef,
-      rules,
+    
       layout,
       handleFinishFailed,
       handleFinish,

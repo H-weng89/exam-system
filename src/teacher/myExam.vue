@@ -9,7 +9,7 @@
         <div class="second">
           
             <div class="search">
-                 题目：<a-input-search
+                 考试名称：<a-input-search
       v-model:value="value"
       placeholder="请输入"
       style="width: 250px"
@@ -27,8 +27,8 @@
     <template #action="{record}">
       <div class="operate">
  <a @click="toDetail(2,record)" style="color:#45d793"> 查看 </a>
-      <a @click="start(1)" style="color:#ffbb65">编辑 </a>
-      <a style="color:#dc5716">删除</a>
+      <a @click="start(record)" style="color:#ffbb65">批改 </a>
+      <!-- <a style="color:#dc5716">删除</a> -->
       </div>
      
     </template>
@@ -53,6 +53,7 @@
 
 import {useRoute,onBeforeRouteUpdate,useRouter} from 'vue-router'
 import { defineComponent, ref,onMounted} from 'vue';
+import api from '../api/axios'
 export default defineComponent({
  
   
@@ -63,14 +64,19 @@ export default defineComponent({
         if(i==1){
           router.push('/createExam')
         }
+
+        if(i==2){
+          router.push({path:'/createExam',query:{id:record.id,main:JSON.stringify(record)}})
+        }
       
     }
     //对话框
      const visible = ref(false);
-    function start(i){
-      i
+    function start(record){
       
-      visible.value = true
+      router.push({path:'/check',query:{main:JSON.stringify(record)}})
+      
+      
     }
     const handleOk = e => {
       console.log(e);
@@ -83,9 +89,34 @@ export default defineComponent({
 onBeforeRouteUpdate(to => {
      key.value = to.query.key
 });
-    onMounted(()=>{
+    onMounted(async ()=>{
       //根据key获取数据
       key.value = route.query.key
+      
+      let result = await api.getExam()
+      console.log(result)
+      let arr = result.data.data
+      arr.forEach( async item=>{
+        //获取学生
+   let res = await api.getStudent(item.exam.id)
+   item.exam.student = res.data.data.length
+   item.exam.studentList = res.data.data
+     item.exam.time = item.exam.startTime+'--'+item.exam.endTime
+     item.exam.scores = item.scores
+
+     data.value.push(item.exam)
+
+
+      })
+   
+setTimeout(()=>{
+ 
+
+
+},100)
+  
+ 
+   
     })
    const columns = ref([{
       title: '考试名称',
@@ -95,41 +126,34 @@ onBeforeRouteUpdate(to => {
       key: 'name',
       fixed: 'left',
      
-    }, {
-      title: '试卷名称',
-      width: 100,
-      dataIndex: 'age',
-      key: 'age',
-      fixed: 'left',
-     
-    },
+    }, 
     {
       title: '考试时间',
-      width: 100,
-      dataIndex: 'age',
-      key: 'age',
+      width: 200,
+      dataIndex: 'time',
+      key: 'time',
       fixed: 'left',
      
     },
       {
       title: '考试时长',
       width: 100,
-      dataIndex: 'age',
-      key: 'age',
+      dataIndex: 'duration',
+      key: 'duration',
       fixed: 'left',
      
     },
     {
       title: '，考试总分',
-      dataIndex: 'address',
-      key: '1',
+      dataIndex: 'scores',
+      key: 'scores',
       width: 150,
       align: 'center'
     },
     {
       title: '考试人数',
-      dataIndex: 'address',
-      key: '1',
+      dataIndex: 'student',
+      key: 'student',
       width: 150,
       align: 'center'
     },
@@ -145,21 +169,12 @@ onBeforeRouteUpdate(to => {
     
       width: 100,
     },  ]);
-    const data = [
+    let data = ref([
      
 
-    ];
+    ]);
 
-    for (let i = 0; i < 100; i++) {
-      data.push({
-        key: i,
-        name: `Edrward ${i}`,
-        age: 32,
-        address: `London Park no. ${i}`,
-        // operation:'进入考试'
-        
-      });
-    }
+
     
   //学科选择和搜索
 const value = ref('');

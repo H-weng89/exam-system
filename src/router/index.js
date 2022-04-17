@@ -28,7 +28,9 @@ const routes = [
     {path:'/person',
   component:()=>import('../student/person.vue')},
   {path:'/message',
-component:()=>import('../student/message.vue')}
+component:()=>import('../student/message.vue')},
+{path:'/start',
+component:()=>import('../student/start.vue')}
     ]
   },
   {
@@ -54,9 +56,32 @@ component:()=>import('../teacher/myExam.vue')},
 {path:'/myProblem',
 component:()=>import('../teacher/myProblem.vue')},
 {path:'/createExam',
-component:()=>import('../teacher/createExam.vue')}
+component:()=>import('../teacher/createExam.vue')},
+{path:'/record',
+component:()=>import('../teacher/record.vue')},
+{path:'/recordA',
+component:()=>import('../teacher/recordA.vue')},
+{path:'/createPaper',
+component:()=>import('../teacher/createPaper.vue')},
+{path:'/check',
+component:()=>import('../teacher/check.vue')},
+{path:'/checkPaper',
+component:()=>import('../teacher/checkPaper.vue')}
+
     ]
-  }
+  },
+  {path:'/manage',
+component:()=>import('../views/manage.vue'),
+children:[
+  {path:'/manage/student',
+component:()=>import('../manager/student.vue')},
+{path:'/manage/message',
+component:()=>import('../manager/message.vue')},
+{path:'/manage/teacher',
+component:()=>import('../manager/teacher.vue')}
+]}
+
+  
 ]
 
 const router = createRouter({

@@ -24,41 +24,41 @@
       
     >
       
-      <a-sub-menu key="sub1">
+      <!-- <a-sub-menu key="sub1">
         <template #icon>
           
           <img src="../assets/yiku.png" alt=""  style="width:20px">
         </template>
-        <template #title>题库</template>
-        <a-menu-item key="2"><span class="circle" style="margin-right:10px"></span>试题管理</a-menu-item>
-        <a-menu-item key="3"><span class="circle"></span>题库管理</a-menu-item>
+        <template #title>用户管理</template>
+        <a-menu-item key="2"><span class="circle" style="margin-right:10px">学生管理</span>试题管理</a-menu-item>
+        <a-menu-item key="3"><span class="circle"></span>教师管理</a-menu-item>
         
 
-      </a-sub-menu>
+      </a-sub-menu> -->
         <a-sub-menu key="sub2">
         <template #icon>
      <img src="../assets/exam.png" alt=""  style="width:20px">
         </template>
-        <template #title>考试</template>
-        <a-menu-item key="4"><span class="circle"></span>我的考试</a-menu-item>
-        <a-menu-item key="5"><span class="circle"></span>我的试卷</a-menu-item>
+        <template #title>用户管理</template>
+        <a-menu-item key="4"><span class="circle"></span>学生管理</a-menu-item>
+        <a-menu-item key="5"><span class="circle"></span>教师管理</a-menu-item>
         
 
       </a-sub-menu>
-        <!-- <a-menu-item key="6">
+        <a-menu-item key="6">
         <template #icon>
         <img src="../assets/check.png" alt=""  style="width:20px">
         </template>
-     批改试卷
+ 系统管理
       </a-menu-item>    
      
       <a-menu-item key="8">
         <template #icon>
           <AppstoreOutlined/>
         </template>
-     成绩管理
-      </a-menu-item>    -->
-          <a-menu-item key="9">
+     通知
+      </a-menu-item>   
+          <!-- <a-menu-item key="9">
         <template #icon>
           <AppstoreOutlined/>
         </template>
@@ -74,7 +74,7 @@
         <a-menu-item key="11"><span class="circle"></span>系统通知</a-menu-item>
         
 
-      </a-sub-menu>
+      </a-sub-menu> -->
       
  
     </a-menu>
@@ -94,12 +94,12 @@
 import {useRouter} from 'vue-router'
 import { defineComponent,reactive,toRefs } from 'vue';
 import header1 from '../components/header.vue'
-import { MailOutlined, AppstoreOutlined } from '@ant-design/icons-vue';
+import { AppstoreOutlined } from '@ant-design/icons-vue';
 
 export default defineComponent({
   components: {
  header1,
-  MailOutlined,
+  
 AppstoreOutlined,
     
   },
@@ -124,32 +124,18 @@ AppstoreOutlined,
 
     //点击导航栏
     function change(item){
-      if(item.key==3){
-        router.push('/tiku')
-      }
-      if(item.key==2){
-        router.push('/problem')
-      }
-      if(item.key==10){
-        router.push('/allMessage')
-      }
-      if(item.key==11){
-        router.push('/sysMessage')
-      }
-      if(item.key==9){
-        router.push('/studentManage')
-      }
+     
       if(item.key==4){
-        router.push('/myExam')
+        router.push('/manage/student')
       }
       if(item.key==5){
-        router.push('/myProblem')
+        router.push('/manage/teacher')
       }
       if(item.key==8){
-        router.push('/record')
+        router.push('/manage/message')
       }
       if(item.key ==6){
-        router.push('/check')
+        router.push('/system')
       }
      
 

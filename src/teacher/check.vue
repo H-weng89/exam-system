@@ -1,33 +1,31 @@
 <template>
     <div class="wra">
         <div class="header">
-            <div class="myExam">我的试卷</div>
+            <div class="myExam">批改试卷</div>
            
-            
+            <!-- <div :class="{'ing':1,'chosen':1}">试题管理</div>
+            <div :class="{'end':1,}">题库管理</div> -->
         </div>
         <div class="second">
           
             <div class="search">
-                 试卷名称：<a-input-search
+                 学生名称：<a-input-search
       v-model:value="value"
       placeholder="请输入"
       style="width: 250px"
       @search="onSearch"
     />
             </div>
-             <div class="bt"><a-button type="primary" style="
-    border-radius: 4px;
-    width: 100px;
-    background-color:#5784ff;
-" @click="start(0)">创建试卷</a-button></div>
+    
         </div>
         <div class="main">
         <a-table :columns="columns" :data-source="data" :pagination="{pageSize:8}"  rowKey="account">
     <template #action="{record}">
       <div class="operate">
- <a @click="toDetail(record)" style="color:#45d793"> 查看 </a>
-      <!-- <a @click="start(1)" style="color:#ffbb65">编辑 </a> -->
-      <a style="color:#dc5716">删除</a>
+ <a @click="toDetail(1,record)" style="color:#45d793" v-if="record.points=='未批改'">批改试卷</a>
+
+       <a  style="color:#ffbb65" v-else>已批改 </a>
+      <!-- <a style="color:#dc5716">删除</a> --> 
       </div>
      
     </template>
@@ -58,23 +56,23 @@ export default defineComponent({
   
   setup() {
     //查看题库
-    function toDetail(record){
+    function toDetail(i,record){
+
       console.log(record)
-       router.push({path:'/createPaper',query:{main:JSON.stringify(record)}})
+        if(i==1){
+          router.push({path:'/checkPaper',query:{main:JSON.stringify(record.main),other:JSON.stringify(record)}})
+        }
       
     }
     //对话框
      const visible = ref(false);
     function start(i){
-        if(i==0){
-          router.push('/createPaper')
-          visible.value = false
-        }
-   
+      i
+      
+      visible.value = true
     }
     const handleOk = e => {
       console.log(e);
-         
       visible.value = false;
     };
     //判断
@@ -88,46 +86,64 @@ onBeforeRouteUpdate(to => {
 let data = ref([])
     onMounted(async ()=>{
       //根据key获取数据
-      key.value = route.query.key
+      key.value = JSON.parse(route.query.main).id
+      let main = JSON.parse(route.query.main)
+      console.log(main)
+      let result = await api.getExamFstudent(key.value)
+      result.data.data.forEach(item=>{
+       
+        let person = {}
+        person.examName = main.name
+        person.time = main.startTime
+        person.scores = main.scores
+        person.points = item.points==0?'未批改':item.points
+        person.uid = item.uid
+        person.id = key.value
+        if(item.examPaper){
+  person.main = JSON.parse(item.examPaper)
+        }
+        else{
+          return
+        }
+      
+        data.value.push(person)
 
-      let result = await api.getPaper(sessionStorage.getItem('id'))
-       let list = result.data.data 
-       list.forEach((item,index)=>{
-         if(index==0){
-           return 
-         }
-         let body = JSON.parse(item.body)
-        
-         let name = body[body.length-2].name
-         let role = body[body.length-1].role.value
-         let i = {name:name,role:role,scores:item.scores,main:item.body,id:item.id}
 
-         data.value.push(i)
-         
-       })
-   console.log(data.value)
+      })
+      console.log(data.value)
 
 
     })
    const columns = ref([{
-      title: '试卷名称',
-      width: 150,
-      dataIndex: 'name',
-      key: 'name',
-      fixed: 'left',
-     
-    }, {
-      title: '试卷总分',
+      title: '考试名称',
       width: 100,
-      dataIndex: 'scores',
-      key: 'scores',
+      dataIndex: 'examName',
+      ellipsis: true,
+      key: 'examName',
       fixed: 'left',
      
     },
     {
-      title: '查看权限',
-      dataIndex: 'role',
-      key: '1',
+      title: '考试时间',
+      width: 100,
+      dataIndex: 'time',
+      key: 'time',
+      fixed: 'left',
+     
+    },
+    
+      
+    {
+      title: '，考试总分',
+      dataIndex: 'scores',
+      key: 'scores',
+      width: 150,
+      align: 'center'
+    },
+    {
+      title: '得分',
+      dataIndex: 'points',
+      key: 'points',
       width: 150,
       align: 'center'
     },
@@ -141,9 +157,11 @@ let data = ref([])
     },
       
     
-      width: 50,
+      width: 100,
     },  ]);
-  
+   
+
+
   //学科选择和搜索
 const value = ref('');
 
@@ -186,7 +204,6 @@ const value = ref('');
 </script>
 
 <style lang="less" scoped>
-
 .wra{
     width: 98% !important;
     height: 95% !important;

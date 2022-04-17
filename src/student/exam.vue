@@ -2,50 +2,47 @@
     <div class="wra">
         <div class="header">
             <div class="myExam">我的考试</div>
-            <div :class="{'wait':1,'chosen':key==1}">未开始</div>
-            <div :class="{'ing':1,'chosen':key==2}">进行中</div>
-            <div :class="{'end':1,'chosen':key==3}">已结束</div>
+           
+            <!-- <div :class="{'ing':1,'chosen':1}">试题管理</div>
+            <div :class="{'end':1,}">题库管理</div> -->
         </div>
         <div class="second">
-            <div class="subject">
-                学科：<a-select
-      ref="select"
-      v-model:value="value1"
-      style="width: 250px"
-      @focus="focus"
-      @change="handleChange"
-      placeholder="选择学科"
-    >
-      <a-select-option value="jack">Jack</a-select-option>
-      <a-select-option value="lucy">Lucy</a-select-option>
-      <a-select-option value="disabled" disabled>Disabled</a-select-option>
-      <a-select-option value="Yiminghe">yiminghe</a-select-option>
-    </a-select>
-            </div>
+          
             <div class="search">
-                 考试名称：<a-input-search
+                 学科：<a-input-search
       v-model:value="value"
       placeholder="请输入"
       style="width: 250px"
       @search="onSearch"
     />
             </div>
+            <!-- <div class="bt"><a-button type="primary" style="
+    border-radius: 4px;
+    width: 100px;
+    background-color:#5784ff;
+" @click="toDetail(1)">添加试卷</a-button></div> -->
         </div>
         <div class="main">
-        <a-table :columns="columns" :data-source="data" :pagination="{pageSize:8}">
-    <template #action>
-      <a @click="start">进入考试</a>
-  
-    </template> 
+        <a-table :columns="columns" :data-source="data" :pagination="{pageSize:8}"  rowKey="account">
+    <template #action="{record}">
+      <div class="operate">
+ <a @click="toDetail(record)" style="color:#45d793" v-if="record.points=='未开始'">进入考试</a>
+  <a @click="toDetail(record)"  style="color:#45d793" v-else>无</a>
+      <!-- <a @click="start(1)" style="color:#ffbb65">编辑 </a>
+      <a style="color:#dc5716">删除</a> -->
+      </div>
+     
+    </template>
   </a-table>
          
- <a-modal v-model:visible="visible" title="考试详情" @ok="handleOk" cancelText="取消" okText="确定" >
+
+  
+        </div>
+         <a-modal v-model:visible="visible" title="题库详情" @ok="handleOk" cancelText="取消" okText="确定" >
       <p>Some contents...</p>
       <p>Some contents...</p>
       <p>Some contents...</p>
     </a-modal>
-  
-        </div>
     </div>
 </template>
 
@@ -55,87 +52,168 @@
 
 
 
-import {useRoute,onBeforeRouteUpdate} from 'vue-router'
-import { defineComponent, ref,} from 'vue';
+import {useRoute,onBeforeRouteUpdate,useRouter} from 'vue-router'
+import { defineComponent, ref,onMounted} from 'vue';
+import api from '../api/axios.js'
 export default defineComponent({
  
   
   setup() {
-    //是否进入考试
-    const visible = ref(false);
-    function start(){
+    //查看题库
+    function toDetail(record){
+      console.log(toDetail)
+      
+      router.push({path:'/start',query:{exam:JSON.stringify(record)}})
+      
+    }
+
+   
+    //对话框
+     const visible = ref(false);
+    function start(i){
+      i
+      
       visible.value = true
     }
     const handleOk = e => {
       console.log(e);
       visible.value = false;
     };
-     let route = useRoute()
-     let key = ref(route.query.key)
-     onBeforeRouteUpdate(to=>{
-       key.value = to.query.key
-     })
+    //判断
+    let route = useRoute()
+    let router = useRouter()
+    let key = ref(route.query.key)
+onBeforeRouteUpdate(async to => {
+     key.value = to.query.key
+     //获取考试
+     let result = await api.getExamS()
+      console.log(result)
+       let  exam = result.data.data
+       console.log(exam)
+       let list = []
+       if(key.value==2){
+          
+       exam.forEach(item=>{
+ 
+          let i = item.exam
+           i.scores = item.scores
+           i.points = item.points
+           if(i.points==0){
+             i.points='未开始'
+          
+  list.push(i)
+           }
+
+         
+       })
+
+       }
+           if(key.value==3){
+     
+       exam.forEach(item=>{
+ 
+          let i = item.exam
+           i.scores = item.scores
+           i.points = item.points
+           if(i.points!=0){
+  list.push(i)
+           }
+
+         
+       })
+
+       }
+        
+    
+
+       data.value = list
+            
+});
+let data = ref([])
+    onMounted(async ()=>{
+      //根据key获取数据
+      key.value = route.query.key
+
+      //获取考试
+      // let result = await api.getExamS()
+      // console.log(result)
+      //  let  exam = result.data.data
+       
+      //  let  list = []
+      //  exam.forEach(item=>{
+      //     let i = item.exam
+      //      i.scores = item.scores
+      //      list.push(i)
+      //  })
+
+      //  data.value = list
+
+
+    })
    const columns = ref([{
       title: '考试名称',
       width: 100,
       dataIndex: 'name',
+      ellipsis: true,
       key: 'name',
       fixed: 'left',
-    }, {
+     
+    },
+    {
       title: '考试时间',
-      width: 100,
-      dataIndex: 'age',
-      key: 'age',
+      width: 200,
+      dataIndex: 'startTime',
+      key: 'startTime',
       fixed: 'left',
-    }, {
+     
+    },
+    {
       title: '考试时长',
-      dataIndex: 'address',
-      key: '1',
-      width: 150,
-    }, {
-      title: '考试总分',
-      dataIndex: 'address',
-      key: '2',
-      width: 150,
+      width: 100,
+      dataIndex: 'duration',
+      key: 'duration',
+      fixed: 'left',
+     
     },
-   
-     {
+      
+    {
+      title: '，考试总分',
+      dataIndex: 'scores',
+      key: 'scores',
+      width: 150,
+      align: 'center'
+    },
+    {
       title: '考试次数',
-      dataIndex: 'address',
-      key: '3',
+      dataIndex: 'chance',
+      key: 'chance',
       width: 150,
+      align: 'center'
     },
-      {
+     {
      title:'操作',
       key: 'operation',
       dataIndex:'operation',
+      align: 'center',
        slots: {
       customRender: 'action',
     },
       
     
       width: 100,
-    }, {
+    }, 
+     {
       title: '我的得分',
-      dataIndex: 'address',
-      key: '4',
-      width: 150,
-    }, ]);
-    const data = [
+      width: 100,
+      dataIndex: 'points',
+      key: 'points',
+      fixed: 'left',
+      align:'center'
      
+    }, ]);
+ 
 
-    ];
 
-    for (let i = 0; i < 100; i++) {
-      data.push({
-        key: i,
-        name: `Edrward ${i}`,
-        age: 32,
-        address: `London Park no. ${i}`,
-        // operation:'进入考试'
-        
-      });
-    }
     
   //学科选择和搜索
 const value = ref('');
@@ -159,12 +237,13 @@ const value = ref('');
       handleChange,
       value,
       onSearch,
-      key,
  data,
  columns,
- visible,
+ key,
  start,
- handleOk
+ handleOk,
+ visible,
+ toDetail
     
  
  
@@ -182,7 +261,7 @@ const value = ref('');
     width: 98% !important;
     height: 95% !important;
   
-    background-color: white;
+    background-color: #eceff8;
     margin: auto;
     margin-top: 20px;
     .header{
@@ -190,12 +269,15 @@ const value = ref('');
         height: 7%;
         display: flex;
        
-        justify-content: space-around;
+        justify-content: flex-start;
+        margin-left: 20px;
         align-items: center;
-        font-size: 16px;
-        color: gray;
+        font-size: 20px;
+        margin-bottom: 10px;
+        
         .chosen{
-          color: black;
+          color: #3a4167;
+          font-weight: 500;
         }
         .myExam{
             font-size: 20px;
@@ -206,18 +288,42 @@ const value = ref('');
     .second{
         align-items: center;
         margin-top: 10px;
-        width: 55%;
-        height: 7%;
+        width: 98%;
+        height: 65px;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
+        margin: auto;
+        border-radius: 5px;
+        background-color: white;
+        margin-bottom: 10px;
+        .bt{
+          border-radius: 10px;
+          margin-right: 20px;
+        }
+
+        .search{
+          span{
+ color: #3a4167;
+          }
+         
+          margin-left: 20px;
+        }
     }
     .main{
         width: 98%;
-        height: 84%;
+        height: 83%;
+        color: #3a4167 !important;
         margin:auto;
         /deep/.ant-table-tbody > tr > td:nth-child(6){
-          color: blue;
+         
 
+        }
+        /deep/.ant-table-thead > tr:first-child > th{
+          background-color:#f6f7fc ;
+        }
+        .operate{
+          display: flex;
+          justify-content: space-around;
         }
          /deep/.ant-table-tbody > tr > td:nth-child(6):hover{
            cursor: pointer;

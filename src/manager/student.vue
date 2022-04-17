@@ -12,22 +12,22 @@
       v-model:value="value"
       placeholder="请输入"
       style="width: 250px"
-      @search="onSearch(1)"
+      @search="onSearch"
     />
             </div>
           <div class="bt"><a-button type="primary" style="
     border-radius: 4px;
     width: 100px;
     background-color:#5784ff;
-" @click="start(0)">添加学生</a-button></div>
+" @click="start(0)">添加对象</a-button></div>
         </div>
         <div class="main">
-        <a-table :columns="columns" :data-source="student" :pagination="{pageSize:7}"  rowKey="account">
+        <a-table :columns="columns" :data-source="data" :pagination="{pageSize:7}"  rowKey="account">
     <template #action="{record}">
       <div class="operate">
  <a @click="start(1,record)" style="color:#45d793"> 查看 </a>
       <!-- <a @click="start(1,record)" style="color:#ffbb65">查看 </a> -->
-      <a style="color:#dc5716" @click="remove(record)">移出</a>
+      <a style="color:#dc5716">删除</a>
       </div>
     </template>
   </a-table>
@@ -38,7 +38,7 @@
          <a-modal v-model:visible="visible"  @ok="handleOk" cancelText="取消" okText="确定"   width="55%" height = "40%"  className = "model" style="	border-radius: 9px;">
            <div class="edit" v-if="!flag">
                     <div class="message">
-               <div class="title">考生个人信息</div>
+               <div class="title">考试个人信息</div>
                 <div class="main">
                   <div class="left">
                     <div>
@@ -93,7 +93,7 @@ width: 22vw;
                   <div class="right">
                     <div>
                        <div class="name">备注信息</div>
-                      <a-textarea v-model:value="message.description" placeholder="Basic usage" :rows="4" style="width: 22vw;
+                      <a-textarea v-model:value="value" placeholder="Basic usage" :rows="4" style="width: 22vw;
 	height: 13vw;
 	background-color: #ffffff;
 	border-radius: 5px;
@@ -137,18 +137,18 @@ width: 11vw;
   
   "
 
-      @search="onSearch(2)"
+      @search="onSearch"
     />
                 </div>
-                <div class="btn"  @click="allAdd()">全部添加</div>
+                <div class="btn" >全部添加</div>
               </div>
               <div class="main">
                 <a-table :columns="columns" :data-source="data" :pagination="{pageSize:4}"  rowKey="account">
     <template #action="{record}">
       <div class="operate">
- <a @click="add(record)" style="color:#45d793" v-if="!record.isChoose">添加 </a>
+ <a @click="start(1,record)" style="color:#45d793" v-if="1">添加 </a>
       <!-- <a @click="start(1,record)" style="color:#ffbb65">查看 </a> -->
-      <a style="color:#dc5716" v-else @click="remove(record)">移除</a>
+      <a style="color:#dc5716" v-else>移除</a>
       </div>
     </template>
   </a-table>
@@ -162,20 +162,19 @@ width: 11vw;
 </template>
 
 <script>
+//假数据
+
+
+
 
 import {useRoute,onBeforeRouteUpdate,useRouter} from 'vue-router'
-import { message } from 'ant-design-vue';
 import { defineComponent, ref,onMounted, reactive} from 'vue';
-
-import api from '../api/axios'
- var messV = message
 export default defineComponent({
-  setup(){
-    
-    
+ 
+  
+  setup() {
     //查看题库
     function toDetail(record){
-      
       console.log(record)
       router.push({path:'/tikuDetail',query:{key:record}})
       
@@ -187,30 +186,15 @@ export default defineComponent({
       school:'',
       num:'',
       subjecta:'',
-      arr:[],
-      description:''
+      arr:[]
     })
     //对话框
      const visible = ref(false);
      //添加对象flag
      let flag = ref(false)
-   async  function start(i,record){
+    function start(i,record){
       if(i==0){
-      await  getAllStudent()
-         data.value.forEach(item=>{
-           student.value.forEach(student=>{
-             if(item.no==student.no){
-               item.isChoose = true
-               return 
-             }
-             else{
-               item.isChoose = false
-             }
-           })
-         })
-         console.log(data.value)
         flag.value  = true
- 
       }
       else{
         flag.value = false
@@ -221,7 +205,6 @@ export default defineComponent({
       visible.value = true
     }
     const handleOk = e => {
-  
       console.log(e);
       visible.value = false;
     };
@@ -232,75 +215,9 @@ export default defineComponent({
 onBeforeRouteUpdate(to => {
      key.value = to.query.key
 });
-
-
-let data = ref([]) //全部学生信息
-
-//添加学生到老师
-let add = async (record)=>{
-  record.isChoose = true
-   let data = [record.id]
-   let result = await api.addStudent(data)
-   getStudent()
-     messV.success(result.data.msg)
-   console.log(result)
-}
-
-
-let allAdd= async ()=>{
-  let arr = []
-  data.value.forEach(item=>{
-    if(!item.isChoose){
-      item.isChoose = true
-      arr.push(item.id)
-    }
-  })
-   let result = await api.addStudent(arr)
-          messV.success(result.data.msg)
-          getStudent()
-          
-
-}
-
-let remove  = async (record)=>{
-
-  record.isChoose = false
-  
-   let data = [record.id]
-   let result = await api.removeStudent(data)
-  await getStudent()
-  messV.success(result.data.msg)
-   
-   console.log(result)
-
-   
-
-}
-
-let student = ref([])  //老师学生信息
-
-let getAllStudent = async ()=>{
-        let result = await api.getAllStudent()
-      data.value = result.data.data
-      console.log(result)
-
-
-}
-
-let getStudent = async ()=>{
- let result = await api.getStudent1('/teacher/getStudents')
-       student.value = result.data.data
-}
-    onMounted(async ()=>{
+    onMounted(()=>{
       //根据key获取数据
       key.value = route.query.key
-
-     getStudent()
-
-
-
-
-      
     })
    const columns = ref([{
       title: '姓名',
@@ -310,27 +227,35 @@ let getStudent = async ()=>{
       key: 'name',
       fixed: 'left',
      
-    }, {
+    }, 
+     {
+      title: '身份',
+      width: 100,
+      dataIndex: 'age',
+      key: 'age',
+      fixed: 'left',
+     
+    },{
       title: '学校',
       width: 100,
-      dataIndex: 'school',
-      key: 'school',
+      dataIndex: 'age',
+      key: 'age',
       fixed: 'left',
      
     },
     {
       title: '专业班级',
       width: 100,
-      dataIndex: 'profession',
-      key: 'profession',
+      dataIndex: 'age',
+      key: 'age',
       fixed: 'left',
      
     },
       {
       title: '学号',
       width: 100,
-      dataIndex: 'no',
-      key: 'no',
+      dataIndex: 'age',
+      key: 'age',
       fixed: 'left',
      
     },
@@ -346,32 +271,28 @@ let getStudent = async ()=>{
     
       width: 50,
     },]);
+    const data = [
+     
 
- 
+    ];
+
+    for (let i = 0; i < 100; i++) {
+      data.push({
+        key: i,
+        name: `Edrward ${i}`,
+        age: 32,
+        address: `London Park no. ${i}`,
+        // operation:'进入考试'
+        
+      });
+    }
     
   //学科选择和搜索
 const value = ref('');
 
-    const onSearch = async (key,searchValue) => {
-      searchValue = value.value
+    const onSearch = searchValue => {
       console.log('use value', searchValue);
-      let data1 = {
-        name:searchValue,
-        no:searchValue,
-        school:searchValue,
-        profession:searchValue
-      }
-      let result = await api.searchStudent(data1)
-      if(key==1){
-        student.value = result.data.data
-      }
-      else{
-        console.log(111)
-        data.value = result.data.data
-      }
-
-        
-  
+      console.log('or use this.value', value.value);
     };
 
     const focus = () => {
@@ -396,11 +317,7 @@ const value = ref('');
  handleOk,
  visible,
  toDetail,
- flag,
- student,
- add,
- remove,
- allAdd
+ flag
     
  
  
